@@ -1,0 +1,95 @@
+SparkScala
+
+What is Scala
+	yet another programming language
+	it's what spark is built with
+		new features are often scala-first
+		you can also program spark with python or java
+	Runs on top of the JVM
+		can access Java classes
+	Functional programming
+
+-val, immutable constants
+-var, mutable variables
+-Variable declaration
+val/var <varName>: <DataType> = <value>
+	val someHello: String = "hello world!"
+	
+*one key objective of functional programming is to use immutable objects as often as possible
+
+-Some DataTypes
+	Int, Boolean, Char, Double, Float, Long, Byte
+
+Scala Regex
+//literals, to avoid escaping...
+val pattern = """<regex>""".r
+
+Tuple is a 1-based index (start with 1 not 0)
+2 value tuple are often used as a key/value pair
+
+List is 0-based index
+
+
+Spark
+	A fast and general engine for large-scale data processing
+	
+	
+RDD
+	Resilient Distributed Data
+	-map, just transform each row
+	-flatmap, if no 1to1 relation... use this instead
+	-filter, boolean.. trimming
+	-distinct, 
+	-sample, pick random values
+	-union, intersection, subtract, cartesian
+
+Some RDD actions, lazy evaluation
+	-collect, count, countByValue, take, top, reduce, .. and more...
+	
+Key Value Pair
+	-Just tuples
+	-reduceByKey(): combine values with the same key using some function.
+		-rdd.reduceByKey((x,y) => x+y) adds them up
+			-x,y represents values... x+y, how to combine them
+	-groupByKey, group values with the same key, unflattened map
+	-with key/value data, use mapValues() and flatMapValues() if your transformation doesn't affect the keys
+		-it's more efficient, your variable will represent the value only
+
+Filtering RDDs - filter(f(U))
+	-just takes a function that reutrns a boolean
+	-for example, we want to filter out entries that don't have "TMIN" in the first itme of a list of data:
+		-val minTemps = parsedLines.filter(x=> x._2 == "TMIN")
+
+
+	
+Advanced
+	-Broadcast
+		-broadcast objects to the executors, such that they are always there whenever needed
+		-use sc.broadcast(someRDD) to ship off whatever you want
+		-then use .value() to get the object back
+		
+	-Option Object
+		-Some
+		-None
+			-flatmap will just discard None results
+		
+	-.max() on RDD
+		-will return the key with the max amount
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+	
+ 
+	
+
