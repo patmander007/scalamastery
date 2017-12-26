@@ -76,14 +76,64 @@ Advanced
 	-.max() on RDD
 		-will return the key with the max amount
 	
+	-:help, to view some useful commands,
+	-:paste, for multiline codes
+
+for loop
+	for (i <- 1 to 10){
+		//blaj
+	}
+	
+Named Functions
+
+	def <function name>(parameter name: type...) : returnType = { expression }
+	
+	def someSum(num1: Int, num2: Int): Int = {
+		num1+num2
+	}
+	
+	functions as a parameter in function
+	
+	def someFunctoin(func: Int=> Int, num1: Int, num2:Int) : returnType = { expression }
+	
+OOP in Scala
+Class
+	class ClassName(//constructor here){
+		//class props and methods
+	}
+
+Object - singleton in scala, static method, cannot be instantiated
+	object ObjectName{
+	
+	}
+
+for class and object with same name, scala interprets it as
+class: Name
+object: Name$
+
+Case Class - adds boilerplate codes, defines class and object, implements Product and Serializable
+case class ClassName(){
+}
+	scala Product has built in methods in accessing class parameters
+	
+Collections
+	Seq, Set, Map
+	-Interfaces, like Java
+	
+	Array, List, Set, Map
+	
+Basic Map Reduce Operations
+	(1 to 100)
+		-creates range of ints, 1 to 100
+	(1 to 100).toList
+		-creates list of ints, 1 to 100
+	(1 to 100 by 2)
+		-creates range of 1 to 100, with step of 2
+		
 	
 	
 	
-
-
-
-
-
+	
 
 
 
