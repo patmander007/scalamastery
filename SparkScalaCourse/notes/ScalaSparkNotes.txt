@@ -130,6 +130,8 @@ Basic Map Reduce Operations
 	(1 to 100 by 2)
 		-creates range of 1 to 100, with step of 2
 		
+Tuples, just put inside ()
+
 	
 	
 	

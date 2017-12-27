@@ -1,0 +1,56 @@
+CCA 175
+
+HDFS
+	config files,
+		-/etc/hadoop/conf/core-site.xml
+		-/etc/hadoop/conf/hdfs-site.xml
+		
+YARN
+	config files,
+		-/etc/hadoop/conf/yarn-site.xml
+		-/etx/spark/conf/spark-env.sh
+	yarn url port: 8088
+
+Apache Sqoop
+	-check the linux hostname,
+	-try to login in mysql, mysql -uroot -p
+	-list-databases(for testing connection)
+		sqoop-list-databases \
+		--connect jdbc:mysql:\\<hostname>:3306 \
+		--username retail_dba \
+		-P
+	sqoop import
+		sqoop import --connect jdbc:mysql://quickstart.cloudera/retail_db \
+		--username retail_dba --password cloudera \
+		--table order_items \
+		--target-dir /user/cloudera/sqoop_imp ort/retail_db/order_items
+		
+	--append
+	--delete-target-dir
+	
+	using split-by
+	//if table has no primary key defined
+	//cloumn should be indexed
+	//values in the field should be sparse
+	//also often it should be sequence generated or evenly incremented
+	//it should not have null values
+	//splitting by strings,
+		sqoop import -Dorg.apache.sqoop.splitter.allow_text_splitter=true
+	
+	--autoreset-to-one-mapper
+		-import will use one mapper if a table has no pirmary key and no split-by c
+		
+	File Formats
+		-text file, default
+		-sequence file
+			-hadoop normal binary format
+		-avro file
+			-jason binary format
+		-parquet file
+			-columna file format
+			
+	Using compression --compress, -z
+		-gzip(default), deflate, snappy, others
+		
+	Boundary Query
+		-
