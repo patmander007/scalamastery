@@ -11,7 +11,7 @@ YARN
 		-/etx/spark/conf/spark-env.sh
 	yarn url port: 8088
 
-Apache Sqoop
+Apache Sqoop 
 	-check the linux hostname,
 	-try to login in mysql, mysql -uroot -p
 	-list-databases(for testing connection)
@@ -25,32 +25,156 @@ Apache Sqoop
 		--table order_items \
 		--target-dir /user/cloudera/sqoop_imp ort/retail_db/order_items
 		
-	--append
-	--delete-target-dir
-	
-	using split-by
-	//if table has no primary key defined
-	//cloumn should be indexed
-	//values in the field should be sparse
-	//also often it should be sequence generated or evenly incremented
-	//it should not have null values
-	//splitting by strings,
-		sqoop import -Dorg.apache.sqoop.splitter.allow_text_splitter=true
-	
-	--autoreset-to-one-mapper
-		-import will use one mapper if a table has no pirmary key and no split-by c
+		--append
+		--delete-target-dir
 		
-	File Formats
-		-text file, default
-		-sequence file
-			-hadoop normal binary format
-		-avro file
-			-jason binary format
-		-parquet file
-			-columna file format
+		using split-by
+		//if table has no primary key defined
+		//cloumn should be indexed
+		//values in the field should be sparse
+		//also often it should be sequence generated or evenly incremented
+		//it should not have null values
+		//splitting by strings,
+			sqoop import -Dorg.apache.sqoop.splitter.allow_text_splitter=true
+		
+		--autoreset-to-one-mapper
+			-import will use one mapper if a table has no pirmary key and no split-by c
 			
-	Using compression --compress, -z
-		-gzip(default), deflate, snappy, others
+		File Formats
+			-text file, default
+			-sequence file
+				-hadoop normal binary format
+			-avro file
+				-jason binary format
+			-parquet file
+				-columna file format
+				
+		Using compression --compress, -z
+			-gzip(default), deflate, snappy, others
+			
+		Boundary Query
+			-query that will replace the min max for id, if you want to select only selected range
+				-select the min and max boundary
+				
+		Transformations and Filtering
+			table and/or columns is mutually exclusive with query option
+			--columns <col1,col2,col3..>
+				columns to import from db
+			--query
+				specify the values to be imported based on query,
+				use target-dir, not warehouse-dir
+				use AND \$CONDITION
+				split-by is mandatory if mappers > 1
 		
-	Boundary Query
-		-
+		Handling Nulls
+			default null in hadoop, null string
+			--null-string <value>
+				string to be written for a null value for string columns
+			--null-non-string <value>
+				string to be written for a null value for non-string columns
+			\000
+				null in ascii code
+			
+		Incremental Import
+			load only the modified/new data, use --append flag
+			by using --query with split-by for mappers > 1
+			by using --where
+			the official incremental import
+				--check-column (col)
+				--incremental <append or lastModified>
+				--last-value (value) the value on the column
+			
+		Hive Import
+			--hive-import
+			--hive-database <dbname>
+			--hive-table <table name>
+			append is the default behavior
+				use --hive-overwrite to delete the existing table
+			--map-column-hive
+				to specify the datatype of the columns
+					
+		
+		Import All tables
+			sqoop import-all-tables
+			limitation
+				--warehouse-dir is mandatory
+				better to use auto-reset-to-one-mapper
+				cannot specify many arguments such as --query, --cols, --where which does filtering or transformations on the data
+				incremental import not possible
+				
+	sqoop export, from hive to rdbms
+		exporting is insert in nature by default
+		--update-mode <mode>, valid mode: updateonly(default) and allowinsert, specify primary key using --update-key (column)
+		--staging-table <staging table>
+		
+			 
+		
+		
+		
+		
+		
+		
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table order_items \
+--hive-import \
+--hive-database patrick \
+--hive-table order_items \
+--hive-overwrite \
+--fields-terminated-by "\t" \
+--map-column-hive "order_item_order_id=string"
+
+sqooop export \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table <table name> \
+--columns <columns> \
+--export-dir <hdfs location> \
+--input-fields-terminated-by <char> \
+
+
+SPARK using scala
+	spark is distributed computing framework
+	running spark
+		spark-shell --master yarn --conf spark.ui.port=
+		-just a combination of: scala + spark dependencies + implicit variables sc and sqlContext
+		
+	to get sc configuration
+		sc.getConf.getAll.foreach(println)
+		
+	RDD - Resilient Distributed Dataset
+		just an extension to scala collections
+	sc.textFile("filePath")
+		if directory is given on the file Path, all the files under in that directory will be processed
+		filePath is in hdfs
+		for accessing from file: file://<filePath>
+	sc.parallelize(<listObject>)
+		to convert list to RDD
+	DataFrame
+		distributed collection plus structure on top of it(metadata)
+	
+	reading json file
+		using sqlContext.read.json
+			val someDataFrame = sqlContext.read.json(filePath)
+			//to show use:
+			someDataFrame.show
+			someDataFrame.showSchema, to display schema
+		
+		using sqlContext.load
+			val someDataFrame2 = sqlContext.load(filePath, dataType)
+			sample:
+				val someDataFrame2 = sqlContext.load("file:///data/data-master/retail_db_json/orders/part-r-00000-990f5773-9005-49ba-b670-631286032674", "json")
+		
+	Standard transformations
+		String manipulation(scala)
+		Row Level transformations
+			when joining, the key should be of int type
+		Filtering, horizantally and vertically
+			vertically, .map, .flatMap, to choose which columns
+			horizontally. .filter
+		
+		
+	
