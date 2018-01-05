@@ -168,7 +168,7 @@ SPARK using scala
 			sample:
 				val someDataFrame2 = sqlContext.load("file:///data/data-master/retail_db_json/orders/part-r-00000-990f5773-9005-49ba-b670-631286032674", "json")
 		
-	Standard transformations
+	Standard transformationsa
 		String manipulation(scala)
 		Row Level transformations
 			when joining, the key should be of int type
@@ -176,5 +176,54 @@ SPARK using scala
 			vertically, .map, .flatMap, to choose which columns
 			horizontally. .filter
 		
+		Testing Options (Some and None)
+			Option == None
 		
+		Aggregations
+			Combiner: groupByKey, reduceByKey, aggregateByKey,
+				reduceByKey, (k,v)
+				aggregateByKey, (k,v)
+					val revenueAndMaxPerId = orderItemsMap.aggregateByKey((0.0f, 0.0f))(
+					  (inter, val1)=>(inter._1+val1, if (inter._2 > val1) inter._2 else val1),
+					  (total, inter)=>(total._1 + inter._1, if (total._2 > inter._2) total._2 else inter._2)
+					)
+					
+					(0.0f, 0.0f) = the initial values of the result
+					(inter, val1) = inter format is the same as the output, val1 is the actual value in the item
+					(total, inter) = inter and total have the same format as the output
+				
+			Ranking, sorting	
+				sortByKey()	= ascending
+				sortByKey(false) = descending
+					if keys are tuple, use negate to reverse the order of specific item in the key
+				
+				for ordering withOut key as ordering
+					takeOrdered(n)([ordering])
+						sample:
+							products.takeOrdered(10)(Ordering[Float].reverse.on(product=> product.split(",")(4).toFloat))
+				
+				for ordering with multiple category
+					use scala collection api: set, list, iterable
+			
+		
+		Saving RDD into text format
+				rdd.saveAsTextFile(<path>), be sure to check the text format!!
+				
+				text format with compression
+					rdd.saveAsTextFile(<path>, classOf[<fully qualified name of compression>])
+						rdd.saveAsTextFile("/root/boom", classOf[org.apache.hadoop.io.compress.SnappyCodec])
+						
+		Save data into different file formats: 
+			orc, json, parquet, avro
+			-DataFrame, not RDD
+				make sure data is represented as data frame
+				using sqlContext, read, load, write, save
+				
+				
+			ls -h, to view the data size in hdfs
+				
+Data Analysis - Spark SQL or HiveQL Using Spark Context
 	
+						
+						
+						
